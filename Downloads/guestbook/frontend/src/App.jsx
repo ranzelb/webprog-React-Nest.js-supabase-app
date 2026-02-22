@@ -129,7 +129,7 @@ function About() {
           <div className="img-wrap">
             <div className="img-box">
               {/* Replace with: <img src="your-photo.jpg" alt="Ranzel" /> */}
-              <span>https://scontent.xx.fbcdn.net/v/t1.15752-9/637207106_2052530562342190_195391000599223267_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=110&ccb=1-7&_nc_sid=9f807c&_nc_ohc=i54TjAitrr0Q7kNvwFlMBrP&_nc_oc=AdkXEvAkejc60rszJhQ_rDwQNv_1w7PC31qQwNDUoKKRvZY91sjSN3q6aa1ZhXgG8d1tAk6IMj1jKsn-ajiB2Qfp&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.xx&oh=03_Q7cD4gHQrnc-2QoJdrHzRY1SglSDmf8dD_YcXYEC6hcBgHYyGg&oe=69C275AE</span>
+              <span>https://scontent.xx.fbcdn.net/v/t1.15752-9/637207106_2052530562342190_195391000599223267_n.jpg</span>
             </div>
             <div className="img-accent"/>
           </div>
