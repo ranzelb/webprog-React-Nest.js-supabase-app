@@ -94,14 +94,14 @@ function Hero() {
     <section id="hero" className="hero">
       <div className="hero-bg-text" aria-hidden>PORTFOLIO</div>
       <div className="hero-content">
-        <p className="hero-eye au">Hello, world — I'm</p>
+        <p className="hero-eye au">Hello, I'm</p>
         <h1 className="hero-name au d1">Ranzel John<br/>Binggoy</h1>
         <div className="hero-row au d2">
           <span className="hero-line"/>
           <span className="hero-role">Web Developer &amp; Designer</span>
         </div>
         <p className="hero-desc au d3">
-          I craft thoughtful digital experiences — blending clean code with intentional design.
+          I craft thoughtful digital experiences blending clean code with intentional design.
           Currently studying at Asia Pacific College, passionate about building things that matter.
         </p>
         <div className="hero-cta au d4">
@@ -129,7 +129,7 @@ function About() {
           <div className="img-wrap">
             <div className="img-box">
               {/* Replace with: <img src="your-photo.jpg" alt="Ranzel" /> */}
-              <span>YOUR PHOTO</span>
+              <span>https://scontent.xx.fbcdn.net/v/t1.15752-9/637207106_2052530562342190_195391000599223267_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=110&ccb=1-7&_nc_sid=9f807c&_nc_ohc=i54TjAitrr0Q7kNvwFlMBrP&_nc_oc=AdkXEvAkejc60rszJhQ_rDwQNv_1w7PC31qQwNDUoKKRvZY91sjSN3q6aa1ZhXgG8d1tAk6IMj1jKsn-ajiB2Qfp&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.xx&oh=03_Q7cD4gHQrnc-2QoJdrHzRY1SglSDmf8dD_YcXYEC6hcBgHYyGg&oe=69C275AE</span>
             </div>
             <div className="img-accent"/>
           </div>
@@ -186,8 +186,8 @@ function Skills() {
 // ── PROJECTS ─────────────────────────────────────────
 const projects = [
   { title: 'Personal Website Finals', desc: 'Full-stack personal portfolio with live guestbook. Built with React frontend calling Supabase directly. Deployed on Vercel.', tags: ['React', 'Supabase', 'Vercel'], demo: '#', repo: 'https://github.com/ranzelb/personal-website-finals' },
-  { title: 'Project Two', desc: 'Describe your second project here. What problem did it solve? What technologies did you use?', tags: ['Vue.js', 'NestJS', 'PostgreSQL'], demo: '#', repo: '#' },
-  { title: 'Project Three', desc: 'Describe your third project here. Keep it concise and impactful.', tags: ['Python', 'Flask', 'MySQL'], demo: '#', repo: '#' },
+  { title: 'Skytravels Website', desc: 'Develop a website for our finals on datamat a Skytravels Website that has its own database', tags: ['Vue.js', 'NestJS', 'PostgreSQL'], demo: '#', repo: '#' },
+  { title: 'Outsystems app', desc: 'Develop a flood-control app using outsystems', tags: ['Python', 'Flask', 'MySQL'], demo: '#', repo: '#' },
 ]
 
 function Projects() {
@@ -346,7 +346,7 @@ function Contact() {
             </a>
             <a href="https://linkedin.com/in/ranzelb" target="_blank" className="c-link">
               <span className="c-ico">◈</span>
-              <div><span className="c-lbl">LinkedIn</span><span className="c-val">Ranzel John Binggoy</span></div>
+              <div><span className="c-lbl">LinkedIn</span><span className="c-val">https://www.linkedin.com/in/ranzel-binggoy-360263323/</span></div>
             </a>
           </div>
         </div>
