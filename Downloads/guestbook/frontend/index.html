@@ -1,32 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="A colorful, playful guestbook — leave your mark! Built with React, NestJS & Supabase." />
-
-    <!-- Theme colors match candy-pink header -->
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ff6b9d" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#1f1a2e" />
-
-    <!-- Open Graph -->
-    <meta property="og:title"       content="Guestbook 📖" />
-    <meta property="og:description" content="Leave a note, react, reply — all in one colorful place!" />
-    <meta property="og:type"        content="website" />
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,600&family=Fredoka+One&family=JetBrains+Mono:wght@400;500&display=swap"
-    />
-
-    <title>Guestbook 📖</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ranzel John Binggoy — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>
+  <title>Ranzel John Binggoy — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080808;
+      --card: #111;
+      --card2: #161616;
+      --border: #222;
+      --border2: #2e2e2e;
+      --text: #f0ece4;
+      --muted: #777;
+      --dim: #444;
+      --accent: #c9a96e;
+      --accent2: #e8d5b0;
+      --glow: rgba(201,169,110,0.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+    ::selection { background: var(--accent); color: #000; }
+    ::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-thumb { background: var(--border2); }
+    a { color: inherit; text-decoration: none; }
+
+    /* NOISE */
+    body::before { content: ''; position: fixed; inset: -200%; width: 400%; height: 400%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px; opacity: 0.02; pointer-events: none; z-index: 9999; animation: grain 8s steps(1) infinite; }
+    @keyframes grain { 0%,100%{transform:translate(0,0)} 20%{transform:translate(-2%,-3%)} 50%{transform:translate(3%,2%)} 80%{transform:translate(-1%,4%)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .au { animation: fadeUp .7s ease both; }
+    .d1{animation-delay:.1s} .d2{animation-delay:.2s} .d3{animation-delay:.3s} .d4{animation-delay:.4s} .d5{animation-delay:.5s}
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 800; padding: 1.4rem 0; transition: all .3s; }
+    nav.scrolled { background: rgba(8,8,8,.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 1rem 0; }
+    .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'DM Mono', monospace; font-size: 1rem; color: var(--accent); letter-spacing: .1em; }
+    .logo span { color: var(--dim); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-family: 'DM Mono', monospace; font-size: .72rem; color: var(--muted); letter-spacing: .05em; transition: color .2s; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-num { color: var(--accent); margin-right: .3rem; font-size: .62rem; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; }
+    .hamburger span { display: block; width: 22px; height: 1px; background: var(--muted); transition: all .3s; }
+    .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+    .nav-menu { display: none; position: fixed; top: 0; right: -100%; width: 70vw; height: 100vh;
+      background: var(--card); border-left: 1px solid var(--border); flex-direction: column;
+      justify-content: center; align-items: center; gap: 2.5rem; transition: right .4s ease; z-index: 900; }
+    .nav-menu.open { right: 0; }
+    .nav-menu a { font-family: 'DM Mono', monospace; font-size: .95rem; color: var(--muted); }
+
+    /* HERO */
+    #hero { min-height: 100vh; display: flex; align-items: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden; }
+    .hero-bg { position: absolute; bottom: -1rem; left: 50%; transform: translateX(-50%);
+      font-family: 'Playfair Display', serif; font-size: clamp(5rem,18vw,16rem); font-weight: 900;
+      color: transparent; -webkit-text-stroke: 1px var(--border2); white-space: nowrap; pointer-events: none; opacity: .35; }
+    .hero-wrap { max-width: 1100px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
+    .hero-eye { font-family: 'DM Mono', monospace; font-size: .75rem; color: var(--accent); letter-spacing: .2em; text-transform: uppercase; margin-bottom: .5rem; }
+    .hero-name { font-family: 'Playfair Display', serif; font-size: clamp(3rem,9vw,7rem); font-weight: 900; line-height: 1.02; margin-bottom: 1.2rem; }
+    .hero-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.8rem; }
+    .hero-line { display: block; width: 50px; height: 1px; background: var(--accent); }
+    .hero-role { font-family: 'DM Mono', monospace; font-size: .8rem; color: var(--muted); letter-spacing: .08em; }
+    .hero-desc { max-width: 500px; color: var(--muted); font-size: 1rem; line-height: 1.8; margin-bottom: 2.2rem; }
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-p { display: inline-block; padding: .85rem 1.8rem; background: var(--accent); color: #000; font-family: 'DM Mono', monospace; font-size: .78rem; font-weight: 500; letter-spacing: .1em; transition: all .2s; border: none; cursor: pointer; }
+    .btn-p:hover { background: var(--accent2); transform: translateY(-2px); }
+    .btn-p:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .btn-g { display: inline-block; padding: .85rem 1.8rem; background: transparent; color: var(--text); font-family: 'DM Mono', monospace; font-size: .78rem; letter-spacing: .1em; border: 1px solid var(--border2); transition: all .2s; }
+    .btn-g:hover { border-color: var(--accent); color: var(--accent); }
+    .scroll-hint { position: absolute; bottom: 2rem; left: 2rem; display: flex; align-items: center; gap: .8rem; z-index: 2; }
+    .scroll-hint span { display: block; width: 36px; height: 1px; background: var(--dim); }
+    .scroll-hint p { font-family: 'DM Mono', monospace; font-size: .65rem; color: var(--dim); letter-spacing: .15em; }
+
+    /* SECTIONS */
+    section { padding: 6.5rem 0; }
+    .alt { background: var(--card); }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+    .sec-hdr { display: flex; align-items: baseline; gap: .8rem; margin-bottom: 3rem; flex-wrap: wrap; }
+    .sec-num { font-family: 'DM Mono', monospace; font-size: .72rem; color: var(--accent); }
+    .sec-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,4.5vw,2.8rem); font-weight: 700; }
+    .sec-sub { width: 100%; color: var(--muted); font-size: .9rem; margin-top: -1.8rem; }
+
+    /* ABOUT */
+    .about-grid { display: grid; grid-template-columns: 300px 1fr; gap: 5rem; align-items: center; }
+    .img-wrap { position: relative; }
+    .img-box { width: 100%; aspect-ratio: 3/4; background: var(--card2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--dim); letter-spacing: .2em; position: relative; z-index: 1; overflow: hidden; }
+    .img-box img { width: 100%; height: 100%; object-fit: cover; }
+    .img-accent { position: absolute; bottom: -10px; right: -10px; width: 100%; height: 100%; border: 1px solid var(--accent); z-index: 0; opacity: .35; }
+    .about-lead { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-style: italic; line-height: 1.5; margin-bottom: 1rem; }
+    .about-text p { color: var(--muted); margin-bottom: 1rem; }
+    .facts { display: flex; flex-direction: column; gap: .6rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+    .fact { display: flex; justify-content: space-between; }
+    .fact-l { font-family: 'DM Mono', monospace; font-size: .68rem; color: var(--dim); letter-spacing: .08em; text-transform: uppercase; }
+    .fact-v { font-size: .88rem; }
+
+    /* SKILLS */
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 1.2rem; }
+    .skill-card { border: 1px solid var(--border); padding: 1.8rem; background: var(--bg); transition: border-color .2s, transform .2s; }
+    .skill-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .sk-hdr { display: flex; align-items: center; gap: .6rem; margin-bottom: 1.1rem; }
+    .sk-icon { font-size: 1.1rem; color: var(--accent); }
+    .sk-cat { font-family: 'DM Mono', monospace; font-size: .68rem; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
+    .tags { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .tag { padding: .28rem .7rem; border: 1px solid var(--border2); font-size: .72rem; color: var(--muted); font-family: 'DM Mono', monospace; transition: all .2s; }
+    .tag:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* PROJECTS */
+    .proj-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+    .proj-card { display: grid; grid-template-columns: 50px 1fr auto; gap: 1.8rem; padding: 2.2rem 1.8rem; background: var(--bg); align-items: start; transition: background .2s; }
+    .proj-card:hover { background: var(--card); }
+    .proj-n { font-family: 'DM Mono', monospace; font-size: .68rem; color: var(--dim); padding-top: .25rem; }
+    .proj-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; margin-bottom: .5rem; }
+    .proj-desc { color: var(--muted); font-size: .88rem; line-height: 1.7; margin-bottom: .8rem; }
+    .proj-links { display: flex; flex-direction: column; gap: .4rem; padding-top: .25rem; }
+    .proj-link { font-family: 'DM Mono', monospace; font-size: .72rem; color: var(--dim); white-space: nowrap; transition: color .2s; }
+    .proj-link:hover { color: var(--accent); }
+
+    /* GUESTBOOK */
+    .guest-form { background: var(--bg); border: 1px solid var(--border); padding: 2.2rem; margin-bottom: 2.5rem; display: flex; flex-direction: column; gap: 1.1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+    .form-grp { display: flex; flex-direction: column; gap: .45rem; }
+    .form-lbl { font-family: 'DM Mono', monospace; font-size: .67rem; color: var(--dim); letter-spacing: .1em; text-transform: uppercase; }
+    .form-inp, .form-ta { background: var(--card2); border: 1px solid var(--border); padding: .8rem .95rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: .92rem; width: 100%; outline: none; resize: none; transition: border-color .2s; }
+    .form-inp:focus, .form-ta:focus { border-color: var(--accent); }
+    .form-inp::placeholder, .form-ta::placeholder { color: var(--dim); }
+    .form-ok { color: #6bcb77; font-family: 'DM Mono', monospace; font-size: .78rem; }
+    .form-err { color: #ff6b6b; font-family: 'DM Mono', monospace; font-size: .78rem; }
+    .comments-hdr { font-family: 'DM Mono', monospace; font-size: .72rem; color: var(--dim); letter-spacing: .1em; text-transform: uppercase; padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); margin-bottom: 1.2rem; }
+    .no-msg { font-family: 'DM Mono', monospace; font-size: .82rem; color: var(--dim); padding: 1.5rem 0; }
+    .c-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+    .c-card { display: flex; gap: 1.1rem; padding: 1.3rem; background: var(--bg); align-items: flex-start; }
+    .c-av { width: 38px; height: 38px; background: var(--glow); border: 1px solid var(--accent); color: var(--accent); font-family: 'Playfair Display', serif; font-size: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .c-meta { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin-bottom: .35rem; }
+    .c-name { font-weight: 500; font-size: .92rem; }
+    .c-loc, .c-time { font-family: 'DM Mono', monospace; font-size: .67rem; color: var(--dim); }
+    .c-time { margin-left: auto; }
+    .c-msg { color: var(--muted); font-size: .88rem; line-height: 1.7; }
+    .dots { display: flex; gap: 5px; padding: 1.5rem 0; }
+    .dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 1.2s ease infinite; }
+    .dots span:nth-child(2){animation-delay:.2s} .dots span:nth-child(3){animation-delay:.4s}
+    @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+    /* CONTACT */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+    .contact-lead { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 700; margin-bottom: .8rem; }
+    .contact-sub { color: var(--muted); }
+    .contact-links { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+    .c-link { display: flex; align-items: center; gap: 1.1rem; padding: 1.3rem; background: var(--bg); transition: background .2s; }
+    .c-link:hover { background: var(--card); }
+    .c-ico { font-size: 1.1rem; color: var(--accent); width: 28px; }
+    .c-lbl { font-family: 'DM Mono', monospace; font-size: .65rem; color: var(--dim); letter-spacing: .08em; text-transform: uppercase; display: block; }
+    .c-val { font-size: .88rem; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 1.8rem 2rem; }
+    .foot-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: .8rem; }
+    .foot-inner span { font-family: 'DM Mono', monospace; font-size: .72rem; color: var(--dim); }
+
+    /* RESPONSIVE */
+    @media(max-width:900px){
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .img-wrap { max-width: 280px; }
+      .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+    @media(max-width:768px){
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .nav-menu { display: flex; }
+    }
+    @media(max-width:650px){
+      section { padding: 4.5rem 0; }
+      .proj-card { grid-template-columns: 1fr; gap: .8rem; }
+      .proj-n { display: none; }
+      .proj-links { flex-direction: row; }
+      .form-row { grid-template-columns: 1fr; }
+      .guest-form { padding: 1.4rem; }
+      .scroll-hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="logo"><span>[</span>RJB<span>]</span></a>
+    <ul class="nav-links">
+      <li><a href="#about"><span class="nav-num">01</span>About</a></li>
+      <li><a href="#skills"><span class="nav-num">02</span>Skills</a></li>
+      <li><a href="#projects"><span class="nav-num">03</span>Projects</a></li>
+      <li><a href="#guestbook"><span class="nav-num">04</span>Guestbook</a></li>
+      <li><a href="#contact"><span class="nav-num">05</span>Contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="nav-menu" id="navMenu">
+  <a href="#about" onclick="closeMenu()"><span class="nav-num">01</span> About</a>
+  <a href="#skills" onclick="closeMenu()"><span class="nav-num">02</span> Skills</a>
+  <a href="#projects" onclick="closeMenu()"><span class="nav-num">03</span> Projects</a>
+  <a href="#guestbook" onclick="closeMenu()"><span class="nav-num">04</span> Guestbook</a>
+  <a href="#contact" onclick="closeMenu()"><span class="nav-num">05</span> Contact</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg" aria-hidden="true">PORTFOLIO</div>
+  <div class="hero-wrap">
+    <p class="hero-eye au">Hello, world — I'm</p>
+    <h1 class="hero-name au d1">Ranzel John<br>Binggoy</h1>
+    <div class="hero-row au d2">
+      <span class="hero-line"></span>
+      <span class="hero-role">Web Developer &amp; Designer</span>
+    </div>
+    <p class="hero-desc au d3">
+      I craft thoughtful digital experiences — blending clean code with intentional design.
+      Currently studying at Asia Pacific College, passionate about building things that matter.
+    </p>
+    <div class="hero-cta au d4">
+      <a href="#projects" class="btn-p">View Work</a>
+      <a href="#contact" class="btn-g">Get in Touch</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span></span>
+    <p>scroll</p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="sec-hdr">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">About Me</h2>
+    </div>
+    <div class="about-grid">
+      <div class="img-wrap">
+        <div class="img-box">
+          <!-- Replace src with your actual photo URL -->
+          <span>YOUR PHOTO</span>
+        </div>
+        <div class="img-accent"></div>
+      </div>
+      <div class="about-text">
+        <p class="about-lead">I'm a passionate developer studying at Asia Pacific College.</p>
+        <p>My journey in tech started with curiosity — breaking things just to understand how they work. Today I build full-stack web applications using modern frameworks.</p>
+        <p>When I'm not coding, you'll find me exploring new technologies, gaming, or finding the best coffee spots in the city.</p>
+        <div class="facts">
+          <div class="fact"><span class="fact-l">Location</span><span class="fact-v">📍 Philippines</span></div>
+          <div class="fact"><span class="fact-l">School</span><span class="fact-v">Asia Pacific College</span></div>
+          <div class="fact"><span class="fact-l">Focus</span><span class="fact-v">Full-Stack Development</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="alt">
+  <div class="container">
+    <div class="sec-hdr">
+      <span class="sec-num">02</span>
+      <h2 class="sec-title">Skills</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <div class="sk-hdr"><span class="sk-icon">⬡</span><span class="sk-cat">Frontend</span></div>
+        <div class="tags">
+          <span class="tag">Vue.js</span><span class="tag">React</span><span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">JavaScript</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="sk-hdr"><span class="sk-icon">⬢</span><span class="sk-cat">Backend</span></div>
+        <div class="tags">
+          <span class="tag">NestJS</span><span class="tag">Node.js</span><span class="tag">Flask</span><span class="tag">REST APIs</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="sk-hdr"><span class="sk-icon">◈</span><span class="sk-cat">Database</span></div>
+        <div class="tags">
+          <span class="tag">Supabase</span><span class="tag">PostgreSQL</span><span class="tag">MySQL</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="sk-hdr"><span class="sk-icon">◎</span><span class="sk-cat">Tools</span></div>
+        <div class="tags">
+          <span class="tag">Git</span><span class="tag">GitHub</span><span class="tag">Vite</span><span class="tag">Vercel</span><span class="tag">VS Code</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="sec-hdr">
+      <span class="sec-num">03</span>
+      <h2 class="sec-title">Projects</h2>
+    </div>
+    <div class="proj-list">
+      <div class="proj-card">
+        <div class="proj-n">01</div>
+        <div>
+          <h3 class="proj-title">Personal Website Finals</h3>
+          <p class="proj-desc">Full-stack personal portfolio with live guestbook. Built with Vue.js frontend, NestJS backend, and Supabase database. Deployed on Vercel.</p>
+          <div class="tags">
+            <span class="tag">Vue.js</span><span class="tag">NestJS</span><span class="tag">Supabase</span><span class="tag">Vercel</span>
+          </div>
+        </div>
+        <div class="proj-links">
+          <a href="#" class="proj-link">↗ Demo</a>
+          <a href="https://github.com/ranzelb/personal-website-finals" target="_blank" class="proj-link">⌥ Repo</a>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-n">02</div>
+        <div>
+          <h3 class="proj-title">Project Two</h3>
+          <p class="proj-desc">Describe your second project here. What problem did it solve? What technologies did you use?</p>
+          <div class="tags">
+            <span class="tag">React</span><span class="tag">Node.js</span><span class="tag">MongoDB</span>
+          </div>
+        </div>
+        <div class="proj-links">
+          <a href="#" class="proj-link">↗ Demo</a>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-n">03</div>
+        <div>
+          <h3 class="proj-title">Project Three</h3>
+          <p class="proj-desc">Describe your third project here. Keep it concise and impactful.</p>
+          <div class="tags">
+            <span class="tag">Python</span><span class="tag">Flask</span><span class="tag">PostgreSQL</span>
+          </div>
+        </div>
+        <div class="proj-links">
+          <a href="#" class="proj-link">↗ Demo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GUESTBOOK -->
+<section id="guestbook" class="alt">
+  <div class="container">
+    <div class="sec-hdr">
+      <span class="sec-num">04</span>
+      <h2 class="sec-title">Guestbook</h2>
+      <p class="sec-sub">Leave a message — I'd love to hear from you.</p>
+    </div>
+
+    <form class="guest-form" onsubmit="submitComment(event)">
+      <div class="form-row">
+        <div class="form-grp">
+          <label class="form-lbl">Name *</label>
+          <input id="f-name" type="text" class="form-inp" placeholder="Your name" required />
+        </div>
+        <div class="form-grp">
+          <label class="form-lbl">From</label>
+          <input id="f-loc" type="text" class="form-inp" placeholder="City, Country" />
+        </div>
+      </div>
+      <div class="form-grp">
+        <label class="form-lbl">Message *</label>
+        <textarea id="f-msg" class="form-ta" rows="4" placeholder="Say something nice..." required></textarea>
+      </div>
+      <button type="submit" class="btn-p" id="submit-btn">Sign Guestbook ✦</button>
+      <p id="form-ok" class="form-ok" style="display:none">✓ Message posted! Thanks for signing.</p>
+      <p id="form-err" class="form-err" style="display:none"></p>
+    </form>
+
+    <div id="comments-count" class="comments-hdr">Loading...</div>
+    <div id="loading" class="dots"><span></span><span></span><span></span></div>
+    <div id="no-msg" class="no-msg" style="display:none">No messages yet. Be the first to sign!</div>
+    <div id="c-list" class="c-list"></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="sec-hdr">
+      <span class="sec-num">05</span>
+      <h2 class="sec-title">Contact</h2>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <p class="contact-lead">Let's build something together.</p>
+        <p class="contact-sub">I'm always open to new opportunities, collaborations, or just a good conversation about tech.</p>
+      </div>
+      <div class="contact-links">
+        <a href="/cdn-cgi/l/email-protection#2d5f5d4f44434a4a42546d5e595849484359034c5d4e03484958035d45" class="c-link">
+          <span class="c-ico">✉</span>
+          <div><span class="c-lbl">Email</span><span class="c-val"><span class="__cf_email__" data-cfemail="0e7c7e6c6760696961774e7d7a7b6a6b607a206f7e6d206b6a7b207e66">[email&#160;protected]</span></span></div>
+        </a>
+        <a href="https://github.com/ranzelb" target="_blank" class="c-link">
+          <span class="c-ico">⌥</span>
+          <div><span class="c-lbl">GitHub</span><span class="c-val">@ranzelb</span></div>
+        </a>
+        <a href="https://linkedin.com/in/ranzelb" target="_blank" class="c-link">
+          <span class="c-ico">◈</span>
+          <div><span class="c-lbl">LinkedIn</span><span class="c-val">Ranzel John Binggoy</span></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <span>© 2026 — Ranzel John Binggoy</span>
+    <span>Built with Vue.js + NestJS + Supabase</span>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // =====================================================
+  // ⚠️ REPLACE THESE WITH YOUR ACTUAL SUPABASE VALUES
+  // =====================================================
+  const SUPABASE_URL = 'https://YOUR-PROJECT-ID.supabase.co'
+  const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY-HERE'
+  // =====================================================
+
+  // Nav scroll effect
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50)
+  })
+
+  // Mobile menu
+  function toggleMenu() {
+    document.getElementById('hamburger').classList.toggle('open')
+    document.getElementById('navMenu').classList.toggle('open')
+  }
+  function closeMenu() {
+    document.getElementById('hamburger').classList.remove('open')
+    document.getElementById('navMenu').classList.remove('open')
+  }
+
+  // ===================== GUESTBOOK =====================
+
+  // GET comments from Supabase
+  async function fetchComments() {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/comments?select=*&order=created_at.desc`, {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      })
+      const data = await res.json()
+      renderComments(data)
+    } catch (e) {
+      document.getElementById('loading').style.display = 'none'
+      document.getElementById('comments-count').textContent = 'Failed to load messages.'
+    }
+  }
+
+  function renderComments(data) {
+    document.getElementById('loading').style.display = 'none'
+    document.getElementById('comments-count').textContent =
+      `${data.length} message${data.length !== 1 ? 's' : ''}`
+
+    if (data.length === 0) {
+      document.getElementById('no-msg').style.display = 'block'
+      return
+    }
+
+    const list = document.getElementById('c-list')
+    list.innerHTML = data.map(c => `
+      <div class="c-card">
+        <div class="c-av">${c.name.charAt(0).toUpperCase()}</div>
+        <div style="flex:1">
+          <div class="c-meta">
+            <span class="c-name">${escHtml(c.name)}</span>
+            ${c.location ? `<span class="c-loc">📍 ${escHtml(c.location)}</span>` : ''}
+            <span class="c-time">${formatDate(c.created_at)}</span>
+          </div>
+          <p class="c-msg">${escHtml(c.message)}</p>
+        </div>
+      </div>
+    `).join('')
+  }
+
+  // POST comment to Supabase
+  async function submitComment(e) {
+    e.preventDefault()
+    const btn = document.getElementById('submit-btn')
+    const ok  = document.getElementById('form-ok')
+    const err = document.getElementById('form-err')
+    const name = document.getElementById('f-name').value.trim()
+    const location = document.getElementById('f-loc').value.trim()
+    const message = document.getElementById('f-msg').value.trim()
+
+    btn.disabled = true
+    btn.textContent = 'Sending...'
+    ok.style.display = 'none'
+    err.style.display = 'none'
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/comments`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({ name, location: location || null, message })
+      })
+
+      if (!res.ok) throw new Error('Failed')
+
+      document.getElementById('f-name').value = ''
+      document.getElementById('f-loc').value = ''
+      document.getElementById('f-msg').value = ''
+      ok.style.display = 'block'
+      document.getElementById('no-msg').style.display = 'none'
+      await fetchComments()
+      setTimeout(() => { ok.style.display = 'none' }, 4000)
+    } catch (e) {
+      err.textContent = '✗ Something went wrong. Please try again.'
+      err.style.display = 'block'
+    } finally {
+      btn.disabled = false
+      btn.textContent = 'Sign Guestbook ✦'
+    }
+  }
+
+  function escHtml(str) {
+    return str.replace(
