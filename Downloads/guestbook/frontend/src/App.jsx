@@ -1,311 +1,384 @@
 import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import './index.css'
 
-// ── Supabase client ──
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://YOUR_PROJECT.supabase.co'
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'YOUR_ANON_KEY'
-const supabase = createClient(supabaseUrl, supabaseKey)
+// =====================================================
+// ⚠️ REPLACE WITH YOUR ACTUAL SUPABASE VALUES
+// Get from: supabase.com → your project → Settings → API
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+// =====================================================
 
-export default function App() {
-  const [posts, setPosts] = useState([])
-  const [name, setName] = useState('')
-  const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(false)
-  const [reactions, setReactions] = useState({}) // Store reactions per post
-  const [showReactionPicker, setShowReactionPicker] = useState(null) // Track which post's picker is open
-  const [userReactions, setUserReactions] = useState({}) // Track which reactions current user has made
+// Supabase helpers — direct REST API calls (GET + POST)
+const supabase = {
+  async getComments() {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/comments?select=*&order=created_at.desc`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+    })
+    if (!res.ok) throw new Error('Failed to fetch')
+    return res.json()
+  },
+  async postComment(data) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/comments`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(data)
+    })
+    if (!res.ok) throw new Error('Failed to post')
+    return res.json()
+  }
+}
+
+// ── NAV ──────────────────────────────────────────────
+function NavBar() {
+  const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    fetchPosts()
+    const onScroll = () => setScrolled(window.scrollY > 50)
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  async function fetchPosts() {
-    setLoading(true)
-    const { data, error } = await supabase
-      .from('guestbook')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (error) {
-      setError('Failed to load posts: ' + error.message)
-    } else {
-      setPosts(data || [])
-    }
-    setLoading(false)
-  }
-
-  async function handleSubmit(e) {
-    e.preventDefault()
-    if (!name.trim() || !message.trim()) return
-    setSubmitting(true)
-    setError(null)
-    const { error } = await supabase
-      .from('guestbook')
-      .insert([{ name: name.trim(), message: message.trim() }])
-    if (error) {
-      setError('Failed to post: ' + error.message)
-    } else {
-      setSuccess(true)
-      setName('')
-      setMessage('')
-      await fetchPosts()
-      setTimeout(() => setSuccess(false), 3000)
-    }
-    setSubmitting(false)
-  }
-
-  const formatDate = (iso) => {
-    const now = new Date()
-    const posted = new Date(iso)
-    const diffMs = now - posted
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-    
-    if (diffMins < 1) return 'Just now'
-    if (diffMins < 60) return `${diffMins}m`
-    if (diffHours < 24) return `${diffHours}h`
-    if (diffDays < 7) return `${diffDays}d`
-    return posted.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  }
-
-  const avatarColor = (name) => {
-    const colors = ['#14b8a6','#f97316','#8b5cf6','#ec4899','#3b82f6','#10b981','#f59e0b','#06b6d4']
-    let hash = 0
-    for (let c of name) hash = c.charCodeAt(0) + ((hash << 5) - hash)
-    return colors[Math.abs(hash) % colors.length]
-  }
-
-  const reactionEmojis = [
-    { emoji: '👍', label: 'Like', color: '#3b82f6' },
-    { emoji: '❤️', label: 'Love', color: '#ec4899' },
-    { emoji: '😂', label: 'Haha', color: '#f59e0b' },
-    { emoji: '😮', label: 'Wow', color: '#8b5cf6' },
-    { emoji: '😢', label: 'Sad', color: '#64748b' },
-    { emoji: '🔥', label: 'Fire', color: '#f97316' },
+  const links = [
+    { id: 'about', label: 'About', num: '01' },
+    { id: 'skills', label: 'Skills', num: '02' },
+    { id: 'projects', label: 'Projects', num: '03' },
+    { id: 'guestbook', label: 'Guestbook', num: '04' },
+    { id: 'contact', label: 'Contact', num: '05' },
   ]
 
-  const handleReaction = (postId, reactionType) => {
-    const userReactionKey = `${postId}-${reactionType}`
-    const hasReacted = userReactions[userReactionKey]
-    
-    setReactions(prev => {
-      const postReactions = prev[postId] || {}
-      const currentCount = postReactions[reactionType] || 0
-      
-      // If user already reacted with this type, remove it (-1), otherwise add it (+1)
-      const newCount = hasReacted ? Math.max(0, currentCount - 1) : currentCount + 1
-      
-      const updatedReactions = { ...postReactions }
-      if (newCount === 0) {
-        delete updatedReactions[reactionType]
-      } else {
-        updatedReactions[reactionType] = newCount
-      }
-      
-      return {
-        ...prev,
-        [postId]: updatedReactions
-      }
-    })
-    
-    // Toggle user's reaction state
-    setUserReactions(prev => ({
-      ...prev,
-      [userReactionKey]: !hasReacted
-    }))
-    
-    setShowReactionPicker(null)
-  }
-
-  const getTopReaction = (postId) => {
-    const postReactions = reactions[postId] || {}
-    const sorted = Object.entries(postReactions).sort((a, b) => b[1] - a[1])
-    return sorted.length > 0 ? sorted[0] : null
-  }
-
-  const getTotalReactions = (postId) => {
-    const postReactions = reactions[postId] || {}
-    return Object.values(postReactions).reduce((sum, count) => sum + count, 0)
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    setMenuOpen(false)
   }
 
   return (
-    <div className="app">
-      {/* ── HEADER ── */}
-      <header className="header">
-        <div className="header-container">
-          <div className="logo">
-            <svg width="40" height="40" viewBox="0 0 40 40">
-              <defs>
-                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{stopColor: '#14b8a6'}} />
-                  <stop offset="100%" style={{stopColor: '#0d9488'}} />
-                </linearGradient>
-              </defs>
-              <circle cx="20" cy="20" r="18" fill="url(#logoGradient)"/>
-              <path d="M13 12h14c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H13c-1.1 0-2-.9-2-2V14c0-1.1.9-2 2-2z" fill="white"/>
-              <line x1="16" y1="17" x2="24" y2="17" stroke="#14b8a6" strokeWidth="1.5" strokeLinecap="round"/>
-              <line x1="16" y1="20" x2="24" y2="20" stroke="#14b8a6" strokeWidth="1.5" strokeLinecap="round"/>
-              <line x1="16" y1="23" x2="21" y2="23" stroke="#14b8a6" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-            <span className="logo-text">guestbook</span>
-          </div>
-        </div>
-      </header>
+    <nav className={scrolled ? 'scrolled' : ''}>
+      <div className="nav-inner">
+        <a href="#hero" className="logo" onClick={e => { e.preventDefault(); scrollTo('hero') }}>
+          <span className="dim">[</span>RJB<span className="dim">]</span>
+        </a>
+        <ul className="nav-links">
+          {links.map(l => (
+            <li key={l.id}>
+              <a href={`#${l.id}`} onClick={e => { e.preventDefault(); scrollTo(l.id) }}>
+                <span className="nav-num">{l.num}</span>{l.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <button className={`hamburger ${menuOpen ? 'open' : ''}`} onClick={() => setMenuOpen(!menuOpen)}>
+          <span/><span/><span/>
+        </button>
+      </div>
+      <div className={`nav-mobile ${menuOpen ? 'open' : ''}`}>
+        {links.map(l => (
+          <a key={l.id} href={`#${l.id}`} onClick={e => { e.preventDefault(); scrollTo(l.id) }}>
+            <span className="nav-num">{l.num}</span> {l.label}
+          </a>
+        ))}
+      </div>
+    </nav>
+  )
+}
 
-      <main className="main">
-        <div className="container">
-          {/* ── CREATE POST ── */}
-          <div className="card create-post">
-            <div className="create-header">
-              <div className="user-avatar" style={{background: '#14b8a6'}}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
-              </div>
-              <button 
-                className="create-trigger"
-                onClick={() => document.getElementById('message').focus()}
-              >
-                What's on your mind?
-              </button>
+// ── HERO ─────────────────────────────────────────────
+function Hero() {
+  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  return (
+    <section id="hero" className="hero">
+      <div className="hero-bg-text" aria-hidden>PORTFOLIO</div>
+      <div className="hero-content">
+        <p className="hero-eye au">Hello, world — I'm</p>
+        <h1 className="hero-name au d1">Ranzel John<br/>Binggoy</h1>
+        <div className="hero-row au d2">
+          <span className="hero-line"/>
+          <span className="hero-role">Web Developer &amp; Designer</span>
+        </div>
+        <p className="hero-desc au d3">
+          I craft thoughtful digital experiences — blending clean code with intentional design.
+          Currently studying at Asia Pacific College, passionate about building things that matter.
+        </p>
+        <div className="hero-cta au d4">
+          <button className="btn-p" onClick={() => scrollTo('projects')}>View Work</button>
+          <button className="btn-g" onClick={() => scrollTo('contact')}>Get in Touch</button>
+        </div>
+      </div>
+      <div className="scroll-hint">
+        <span/><p>scroll</p>
+      </div>
+    </section>
+  )
+}
+
+// ── ABOUT ────────────────────────────────────────────
+function About() {
+  return (
+    <section id="about">
+      <div className="container">
+        <div className="sec-hdr">
+          <span className="sec-num">01</span>
+          <h2 className="sec-title">About Me</h2>
+        </div>
+        <div className="about-grid">
+          <div className="img-wrap">
+            <div className="img-box">
+              {/* Replace with: <img src="your-photo.jpg" alt="Ranzel" /> */}
+              <span>YOUR PHOTO</span>
             </div>
-            
-            <div className="divider"></div>
-            
-            <form onSubmit={handleSubmit} className="create-form">
-              <input
-                id="name"
-                type="text"
-                placeholder="Your name"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                maxLength={80}
-                required
-                className="input-name"
-              />
-              <textarea
-                id="message"
-                placeholder="Write something..."
-                value={message}
-                onChange={e => setMessage(e.target.value)}
-                maxLength={500}
-                rows={3}
-                required
-                className="input-message"
-              />
-              {error && <div className="alert alert-error">{error}</div>}
-              {success && <div className="alert alert-success">Posted!</div>}
-              <button type="submit" className="btn-post" disabled={submitting}>
-                {submitting ? 'Posting...' : 'Post'}
-              </button>
-            </form>
+            <div className="img-accent"/>
           </div>
-
-          {/* ── FEED ── */}
-          <div className="feed">
-            {loading ? (
-              <>
-                {[1,2,3].map(i => (
-                  <div key={i} className="card skeleton">
-                    <div className="skeleton-header">
-                      <div className="skeleton-avatar"></div>
-                      <div className="skeleton-info">
-                        <div className="skeleton-name"></div>
-                        <div className="skeleton-time"></div>
-                      </div>
-                    </div>
-                    <div className="skeleton-text"></div>
-                    <div className="skeleton-text short"></div>
-                  </div>
-                ))}
-              </>
-            ) : posts.length === 0 ? (
-              <div className="card empty-state">
-                <p>No posts yet. Be the first to share!</p>
-              </div>
-            ) : (
-              posts.map((post) => (
-                <article key={post.id} className="card post">
-                  <div className="post-header">
-                    <div className="user-avatar" style={{background: avatarColor(post.name)}}>
-                      {post.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="post-info">
-                      <div className="post-author">{post.name}</div>
-                      <div className="post-time">{formatDate(post.created_at)}</div>
-                    </div>
-                  </div>
-                  <div className="post-content">
-                    {post.message}
-                  </div>
-                  
-                  {getTotalReactions(post.id) > 0 && (
-                    <div className="reaction-summary">
-                      {Object.entries(reactions[post.id] || {}).map(([type, count]) => {
-                        const reaction = reactionEmojis.find(r => r.label === type)
-                        return count > 0 ? (
-                          <span key={type} className="reaction-badge">
-                            {reaction.emoji} {count}
-                          </span>
-                        ) : null
-                      })}
-                    </div>
-                  )}
-
-                  <div className="post-actions">
-                    <div className="action-btn-container">
-                      <button 
-                        className="action-btn"
-                        onClick={() => setShowReactionPicker(showReactionPicker === post.id ? null : post.id)}
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/>
-                        </svg>
-                        {getTopReaction(post.id) ? reactionEmojis.find(r => r.label === getTopReaction(post.id)[0])?.emoji : 'Like'}
-                      </button>
-                      
-                      {showReactionPicker === post.id && (
-                        <div className="reaction-picker">
-                          {reactionEmojis.map(reaction => {
-                            const userReactionKey = `${post.id}-${reaction.label}`
-                            const hasReacted = userReactions[userReactionKey]
-                            return (
-                              <button
-                                key={reaction.label}
-                                className={`reaction-option ${hasReacted ? 'reacted' : ''}`}
-                                onClick={() => handleReaction(post.id, reaction.label)}
-                                title={reaction.label}
-                              >
-                                <span className="reaction-emoji">{reaction.emoji}</span>
-                              </button>
-                            )
-                          })}
-                        </div>
-                      )}
-                    </div>
-                    
-                    <button className="action-btn">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                      </svg>
-                      Comment
-                    </button>
-                    <button className="action-btn">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
-                      </svg>
-                      Share
-                    </button>
-                  </div>
-                </article>
-              ))
-            )}
+          <div className="about-text">
+            <p className="about-lead">I'm a passionate developer studying at Asia Pacific College.</p>
+            <p>My journey in tech started with curiosity — breaking things just to understand how they work. Today I build full-stack web applications using modern frameworks.</p>
+            <p>When I'm not coding, you'll find me exploring new technologies, gaming, or finding the best coffee spots in the city.</p>
+            <div className="facts">
+              <div className="fact"><span className="fact-l">Location</span><span>📍 Philippines</span></div>
+              <div className="fact"><span className="fact-l">School</span><span>Asia Pacific College</span></div>
+              <div className="fact"><span className="fact-l">Focus</span><span>Full-Stack Development</span></div>
+            </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </section>
+  )
+}
+
+// ── SKILLS ───────────────────────────────────────────
+const skillGroups = [
+  { icon: '⬡', cat: 'Frontend', skills: ['Vue.js', 'React', 'HTML5', 'CSS3', 'JavaScript'] },
+  { icon: '⬢', cat: 'Backend',  skills: ['NestJS', 'Node.js', 'Flask', 'REST APIs'] },
+  { icon: '◈', cat: 'Database', skills: ['Supabase', 'PostgreSQL', 'MySQL'] },
+  { icon: '◎', cat: 'Tools',    skills: ['Git', 'GitHub', 'Vite', 'Vercel', 'VS Code'] },
+]
+
+function Skills() {
+  return (
+    <section id="skills" className="alt">
+      <div className="container">
+        <div className="sec-hdr">
+          <span className="sec-num">02</span>
+          <h2 className="sec-title">Skills</h2>
+        </div>
+        <div className="skills-grid">
+          {skillGroups.map(g => (
+            <div className="skill-card" key={g.cat}>
+              <div className="sk-hdr">
+                <span className="sk-icon">{g.icon}</span>
+                <span className="sk-cat">{g.cat}</span>
+              </div>
+              <div className="tags">
+                {g.skills.map(s => <span className="tag" key={s}>{s}</span>)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── PROJECTS ─────────────────────────────────────────
+const projects = [
+  { title: 'Personal Website Finals', desc: 'Full-stack personal portfolio with live guestbook. Built with React frontend calling Supabase directly. Deployed on Vercel.', tags: ['React', 'Supabase', 'Vercel'], demo: '#', repo: 'https://github.com/ranzelb/personal-website-finals' },
+  { title: 'Project Two', desc: 'Describe your second project here. What problem did it solve? What technologies did you use?', tags: ['Vue.js', 'NestJS', 'PostgreSQL'], demo: '#', repo: '#' },
+  { title: 'Project Three', desc: 'Describe your third project here. Keep it concise and impactful.', tags: ['Python', 'Flask', 'MySQL'], demo: '#', repo: '#' },
+]
+
+function Projects() {
+  return (
+    <section id="projects">
+      <div className="container">
+        <div className="sec-hdr">
+          <span className="sec-num">03</span>
+          <h2 className="sec-title">Projects</h2>
+        </div>
+        <div className="proj-list">
+          {projects.map((p, i) => (
+            <div className="proj-card" key={p.title}>
+              <div className="proj-n">{String(i+1).padStart(2,'0')}</div>
+              <div>
+                <h3 className="proj-title">{p.title}</h3>
+                <p className="proj-desc">{p.desc}</p>
+                <div className="tags">{p.tags.map(t => <span className="tag" key={t}>{t}</span>)}</div>
+              </div>
+              <div className="proj-links">
+                {p.demo && <a href={p.demo} target="_blank" className="proj-link">↗ Demo</a>}
+                {p.repo && <a href={p.repo} target="_blank" className="proj-link">⌥ Repo</a>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── GUESTBOOK ────────────────────────────────────────
+function Guestbook() {
+  const [comments, setComments] = useState([])
+  const [loading, setLoading]   = useState(true)
+  const [form, setForm]         = useState({ name: '', location: '', message: '' })
+  const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess]   = useState(false)
+  const [error, setError]       = useState('')
+
+  const fetchComments = async () => {
+    setLoading(true)
+    try {
+      const data = await supabase.getComments()
+      setComments(data)
+    } catch { /* silent */ }
+    finally { setLoading(false) }
+  }
+
+  useEffect(() => { fetchComments() }, [])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setSubmitting(true); setSuccess(false); setError('')
+    try {
+      await supabase.postComment({
+        name: form.name.trim(),
+        location: form.location.trim() || null,
+        message: form.message.trim()
+      })
+      setForm({ name: '', location: '', message: '' })
+      setSuccess(true)
+      await fetchComments()
+      setTimeout(() => setSuccess(false), 4000)
+    } catch { setError('Something went wrong. Please try again.') }
+    finally { setSubmitting(false) }
+  }
+
+  const fmt = (d) => new Date(d).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' })
+
+  return (
+    <section id="guestbook" className="alt">
+      <div className="container">
+        <div className="sec-hdr">
+          <span className="sec-num">04</span>
+          <h2 className="sec-title">Guestbook</h2>
+          <p className="sec-sub">Leave a message — I'd love to hear from you.</p>
+        </div>
+
+        {/* POST form */}
+        <form className="guest-form" onSubmit={handleSubmit}>
+          <div className="form-row">
+            <div className="form-grp">
+              <label className="form-lbl">Name *</label>
+              <input className="form-inp" placeholder="Your name" required
+                value={form.name} onChange={e => setForm({...form, name: e.target.value})} />
+            </div>
+            <div className="form-grp">
+              <label className="form-lbl">From</label>
+              <input className="form-inp" placeholder="City, Country"
+                value={form.location} onChange={e => setForm({...form, location: e.target.value})} />
+            </div>
+          </div>
+          <div className="form-grp">
+            <label className="form-lbl">Message *</label>
+            <textarea className="form-ta" rows="4" placeholder="Say something nice..." required
+              value={form.message} onChange={e => setForm({...form, message: e.target.value})} />
+          </div>
+          <button type="submit" className="btn-p" disabled={submitting}>
+            {submitting ? 'Sending...' : 'Sign Guestbook ✦'}
+          </button>
+          {success && <p className="form-ok">✓ Message posted! Thanks for signing.</p>}
+          {error   && <p className="form-err">✗ {error}</p>}
+        </form>
+
+        {/* GET comments list */}
+        <div className="comments-hdr">
+          {loading ? 'Loading...' : `${comments.length} message${comments.length !== 1 ? 's' : ''}`}
+        </div>
+        {loading && <div className="dots"><span/><span/><span/></div>}
+        {!loading && comments.length === 0 && <p className="no-msg">No messages yet. Be the first to sign!</p>}
+        {!loading && comments.length > 0 && (
+          <div className="c-list">
+            {comments.map(c => (
+              <div className="c-card" key={c.id}>
+                <div className="c-av">{c.name.charAt(0).toUpperCase()}</div>
+                <div style={{flex:1}}>
+                  <div className="c-meta">
+                    <span className="c-name">{c.name}</span>
+                    {c.location && <span className="c-loc">📍 {c.location}</span>}
+                    <span className="c-time">{fmt(c.created_at)}</span>
+                  </div>
+                  <p className="c-msg">{c.message}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+// ── CONTACT ──────────────────────────────────────────
+function Contact() {
+  return (
+    <section id="contact">
+      <div className="container">
+        <div className="sec-hdr">
+          <span className="sec-num">05</span>
+          <h2 className="sec-title">Contact</h2>
+        </div>
+        <div className="contact-grid">
+          <div>
+            <p className="contact-lead">Let's build something together.</p>
+            <p className="contact-sub">I'm always open to new opportunities, collaborations, or just a good conversation about tech.</p>
+          </div>
+          <div className="contact-links">
+            <a href="mailto:rpbinggoy@student.apc.edu.ph" className="c-link">
+              <span className="c-ico">✉</span>
+              <div><span className="c-lbl">Email</span><span className="c-val">rpbinggoy@student.apc.edu.ph</span></div>
+            </a>
+            <a href="https://github.com/ranzelb" target="_blank" className="c-link">
+              <span className="c-ico">⌥</span>
+              <div><span className="c-lbl">GitHub</span><span className="c-val">@ranzelb</span></div>
+            </a>
+            <a href="https://linkedin.com/in/ranzelb" target="_blank" className="c-link">
+              <span className="c-ico">◈</span>
+              <div><span className="c-lbl">LinkedIn</span><span className="c-val">Ranzel John Binggoy</span></div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── FOOTER ───────────────────────────────────────────
+function Footer() {
+  return (
+    <footer>
+      <div className="foot-inner">
+        <span>© 2026 — Ranzel John Binggoy</span>
+        <span>Built with React + Supabase</span>
+      </div>
+    </footer>
+  )
+}
+
+// ── APP ──────────────────────────────────────────────
+export default function App() {
+  return (
+    <>
+      <NavBar />
+      <Hero />
+      <About />
+      <Skills />
+      <Projects />
+      <Guestbook />
+      <Contact />
+      <Footer />
+    </>
   )
 }
