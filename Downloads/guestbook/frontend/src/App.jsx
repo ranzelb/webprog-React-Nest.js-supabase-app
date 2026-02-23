@@ -3,18 +3,16 @@ import './index.css'
 
 // =====================================================
 // ⚠️ REPLACE WITH YOUR ACTUAL SUPABASE VALUES
-// Get from: supabase.com → your project → Settings → API
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 // =====================================================
 
-// Supabase helpers — direct REST API calls (GET + POST)
-const supabase = {
+const db = {
   async getComments() {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/comments?select=*&order=created_at.desc`, {
       headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
     })
-    if (!res.ok) throw new Error('Failed to fetch')
+    if (!res.ok) throw new Error('Failed')
     return res.json()
   },
   async postComment(data) {
@@ -28,7 +26,7 @@ const supabase = {
       },
       body: JSON.stringify(data)
     })
-    if (!res.ok) throw new Error('Failed to post')
+    if (!res.ok) throw new Error('Failed')
     return res.json()
   }
 }
@@ -45,11 +43,11 @@ function NavBar() {
   }, [])
 
   const links = [
-    { id: 'about', label: 'About', num: '01' },
-    { id: 'skills', label: 'Skills', num: '02' },
-    { id: 'projects', label: 'Projects', num: '03' },
+    { id: 'about',     label: 'About',     num: '01' },
+    { id: 'skills',    label: 'Skills',    num: '02' },
+    { id: 'projects',  label: 'Projects',  num: '03' },
     { id: 'guestbook', label: 'Guestbook', num: '04' },
-    { id: 'contact', label: 'Contact', num: '05' },
+    { id: 'contact',   label: 'Contact',   num: '05' },
   ]
 
   const scrollTo = (id) => {
@@ -94,14 +92,14 @@ function Hero() {
     <section id="hero" className="hero">
       <div className="hero-bg-text" aria-hidden>PORTFOLIO</div>
       <div className="hero-content">
-        <p className="hero-eye au">Hello, I'm</p>
+        <p className="hero-eye au">Hello, world — I'm</p>
         <h1 className="hero-name au d1">Ranzel John<br/>Binggoy</h1>
         <div className="hero-row au d2">
           <span className="hero-line"/>
           <span className="hero-role">Web Developer &amp; Designer</span>
         </div>
         <p className="hero-desc au d3">
-          I craft thoughtful digital experiences blending clean code with intentional design.
+          I craft thoughtful digital experiences — blending clean code with intentional design.
           Currently studying at Asia Pacific College, passionate about building things that matter.
         </p>
         <div className="hero-cta au d4">
@@ -118,6 +116,8 @@ function Hero() {
 
 // ── ABOUT ────────────────────────────────────────────
 function About() {
+  const [imgError, setImgError] = useState(false)
+
   return (
     <section id="about">
       <div className="container">
@@ -128,19 +128,53 @@ function About() {
         <div className="about-grid">
           <div className="img-wrap">
             <div className="img-box">
-              {/* Replace with: <img src="your-photo.jpg" alt="Ranzel" /> */}
-              <span>https://scontent.xx.fbcdn.net/v/t1.15752-9/637207106_2052530562342190_195391000599223267_n.jpg</span>
+              {/* Upload photo.jpg to frontend/public/ in GitHub to show your photo */}
+              {!imgError ? (
+                <img
+                  src="/photo.jpg"
+                  alt="Ranzel John Binggoy"
+                  onError={() => setImgError(true)}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+              ) : (
+                <span style={{ fontFamily: 'monospace', fontSize: '.7rem', color: '#444', letterSpacing: '.15em', textAlign: 'center', padding: '1rem' }}>
+                  Upload photo.jpg<br/>to /public folder
+                </span>
+              )}
             </div>
             <div className="img-accent"/>
           </div>
           <div className="about-text">
-            <p className="about-lead">I'm a passionate developer studying at Asia Pacific College.</p>
-            <p>My journey in tech started with curiosity — breaking things just to understand how they work. Today I build full-stack web applications using modern frameworks.</p>
-            <p>When I'm not coding, you'll find me exploring new technologies, gaming, or finding the best coffee spots in the city.</p>
+            <p className="about-lead">
+              I'm a passionate developer currently pursuing my degree in
+              Information Technology at Asia Pacific College.
+            </p>
+            <p>
+              My journey in tech started with curiosity — breaking things just to understand
+              how they work. Today I build full-stack web applications using modern frameworks
+              and love turning complex problems into elegant solutions.
+            </p>
+            <p>
+              When I'm not coding, you'll find me gaming, exploring new technologies,
+              or finding the best food spots around the city.
+            </p>
             <div className="facts">
-              <div className="fact"><span className="fact-l">Location</span><span>📍 Philippines</span></div>
-              <div className="fact"><span className="fact-l">School</span><span>Asia Pacific College</span></div>
-              <div className="fact"><span className="fact-l">Focus</span><span>Full-Stack Development</span></div>
+              <div className="fact">
+                <span className="fact-l">Location</span>
+                <span>📍 Philippines</span>
+              </div>
+              <div className="fact">
+                <span className="fact-l">School</span>
+                <span>Asia Pacific College</span>
+              </div>
+              <div className="fact">
+                <span className="fact-l">Course</span>
+                <span>Information Technology</span>
+              </div>
+              <div className="fact">
+                <span className="fact-l">Focus</span>
+                <span>Full-Stack Development</span>
+              </div>
             </div>
           </div>
         </div>
@@ -185,9 +219,27 @@ function Skills() {
 
 // ── PROJECTS ─────────────────────────────────────────
 const projects = [
-  { title: 'Personal Website Finals', desc: 'Full-stack personal portfolio with live guestbook. Built with React frontend calling Supabase directly. Deployed on Vercel.', tags: ['React', 'Supabase', 'Vercel'], demo: '#', repo: 'https://github.com/ranzelb/personal-website-finals' },
-  { title: 'Skytravels Website', desc: 'Develop a website for our finals on datamat a Skytravels Website that has its own database', tags: ['Vue.js', 'NestJS', 'PostgreSQL'], demo: '#', repo: '#' },
-  { title: 'Outsystems app', desc: 'Develop a flood-control app using outsystems', tags: ['Python', 'Flask', 'MySQL'], demo: '#', repo: '#' },
+  {
+    title: 'Personal Website Finals',
+    desc: 'Full-stack personal portfolio with live guestbook. React frontend calling Supabase directly. Fully responsive, deployed on Vercel.',
+    tags: ['React', 'Supabase', 'Vercel'],
+    demo: 'https://your-site.vercel.app',
+    repo: 'https://github.com/ranzelb'
+  },
+  {
+    title: 'Project Two',
+    desc: 'Describe your second project here. What problem did it solve? What technologies did you use?',
+    tags: ['Vue.js', 'NestJS', 'PostgreSQL'],
+    demo: '',
+    repo: ''
+  },
+  {
+    title: 'Project Three',
+    desc: 'Describe your third project here. Keep it concise and highlight the most impressive parts.',
+    tags: ['Python', 'Flask', 'MySQL'],
+    demo: '',
+    repo: ''
+  },
 ]
 
 function Projects() {
@@ -230,10 +282,7 @@ function Guestbook() {
 
   const fetchComments = async () => {
     setLoading(true)
-    try {
-      const data = await supabase.getComments()
-      setComments(data)
-    } catch { /* silent */ }
+    try { setComments(await db.getComments()) } catch {}
     finally { setLoading(false) }
   }
 
@@ -243,17 +292,20 @@ function Guestbook() {
     e.preventDefault()
     setSubmitting(true); setSuccess(false); setError('')
     try {
-      await supabase.postComment({
-        name: form.name.trim(),
+      await db.postComment({
+        name:     form.name.trim(),
         location: form.location.trim() || null,
-        message: form.message.trim()
+        message:  form.message.trim()
       })
       setForm({ name: '', location: '', message: '' })
       setSuccess(true)
       await fetchComments()
       setTimeout(() => setSuccess(false), 4000)
-    } catch { setError('Something went wrong. Please try again.') }
-    finally { setSubmitting(false) }
+    } catch {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const fmt = (d) => new Date(d).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' })
@@ -267,7 +319,7 @@ function Guestbook() {
           <p className="sec-sub">Leave a message — I'd love to hear from you.</p>
         </div>
 
-        {/* POST form */}
+        {/* POST — Submit a comment */}
         <form className="guest-form" onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-grp">
@@ -293,12 +345,14 @@ function Guestbook() {
           {error   && <p className="form-err">✗ {error}</p>}
         </form>
 
-        {/* GET comments list */}
+        {/* GET — List of comments */}
         <div className="comments-hdr">
           {loading ? 'Loading...' : `${comments.length} message${comments.length !== 1 ? 's' : ''}`}
         </div>
         {loading && <div className="dots"><span/><span/><span/></div>}
-        {!loading && comments.length === 0 && <p className="no-msg">No messages yet. Be the first to sign!</p>}
+        {!loading && comments.length === 0 && (
+          <p className="no-msg">No messages yet. Be the first to sign!</p>
+        )}
         {!loading && comments.length > 0 && (
           <div className="c-list">
             {comments.map(c => (
@@ -333,20 +387,32 @@ function Contact() {
         <div className="contact-grid">
           <div>
             <p className="contact-lead">Let's build something together.</p>
-            <p className="contact-sub">I'm always open to new opportunities, collaborations, or just a good conversation about tech.</p>
+            <p className="contact-sub">
+              I'm always open to new opportunities, collaborations,
+              or just a good conversation about tech.
+            </p>
           </div>
           <div className="contact-links">
             <a href="mailto:rpbinggoy@student.apc.edu.ph" className="c-link">
               <span className="c-ico">✉</span>
-              <div><span className="c-lbl">Email</span><span className="c-val">rpbinggoy@student.apc.edu.ph</span></div>
+              <div>
+                <span className="c-lbl">Email</span>
+                <span className="c-val">rpbinggoy@student.apc.edu.ph</span>
+              </div>
             </a>
             <a href="https://github.com/ranzelb" target="_blank" className="c-link">
               <span className="c-ico">⌥</span>
-              <div><span className="c-lbl">GitHub</span><span className="c-val">@ranzelb</span></div>
+              <div>
+                <span className="c-lbl">GitHub</span>
+                <span className="c-val">@ranzelb</span>
+              </div>
             </a>
             <a href="https://linkedin.com/in/ranzelb" target="_blank" className="c-link">
               <span className="c-ico">◈</span>
-              <div><span className="c-lbl">LinkedIn</span><span className="c-val">https://www.linkedin.com/in/ranzel-binggoy-360263323/</span></div>
+              <div>
+                <span className="c-lbl">LinkedIn</span>
+                <span className="c-val">Ranzel John Binggoy</span>
+              </div>
             </a>
           </div>
         </div>
