@@ -85,7 +85,7 @@ function Hero() {
     <section id="hero" className="hero">
       <div className="hero-bg-text" aria-hidden>PORTFOLIO</div>
       <div className="hero-content">
-        <p className="hero-eye au">Hello, world — I'm</p>
+        <p className="hero-eye au">Hello, I'm</p>
         <h1 className="hero-name au d1">Ranzel John<br/>Binggoy</h1>
         <div className="hero-row au d2">
           <span className="hero-line"/>
@@ -183,8 +183,8 @@ function Skills() {
 
 const projects = [
   { title: 'Personal Website Finals', desc: 'Full-stack personal portfolio with live guestbook. React frontend calling Supabase directly. Fully responsive, deployed on Vercel.', tags: ['React', 'Supabase', 'Vercel'], demo: '', repo: 'https://github.com/ranzelb' },
-  { title: 'Project Two', desc: 'Describe your second project here. What problem did it solve? What technologies did you use?', tags: ['Vue.js', 'NestJS', 'PostgreSQL'], demo: '', repo: '' },
-  { title: 'Project Three', desc: 'Describe your third project here. Keep it concise and highlight the most impressive parts.', tags: ['Python', 'Flask', 'MySQL'], demo: '', repo: '' },
+  { title: 'Flood Warning App', desc: 'Using Outsystems we develop a simple app that show a flood warnings and also suggest you a another route to take.' , tags: ['OUTSYSTEMS'], demo: '', repo: 'https://asiapacificcollege.sharepoint.com/sites/RPASYSTAFD241IT243T1AY2025-2026/_layouts/15/embed.aspx?uniqueId=a07ceac5-fff6-4709-9e24-f020f053bd80&embed=%7B"ha"%3A"teams"%2C"hv"%3A"assignments"%2C"hm"%3A"view"%2C"hp"%3A"web"%2C"nb"%3Atrue%7D' },
+  { title: 'SkySurfers Travel & Tours Website', desc: 'Using Github, Vercel, and Supabase we develop a website that records the data when a user book there flight.', tags: ['Github', 'Vercel', 'MySQL'], demo: '', repo: 'https://datama-2-sky-surfers.vercel.app' },
 ]
 
 function Projects() {
@@ -329,7 +329,7 @@ function Contact() {
             </a>
             <a href="https://linkedin.com/in/ranzelb" target="_blank" className="c-link">
               <span className="c-ico">◈</span>
-              <div><span className="c-lbl">LinkedIn</span><span className="c-val">Ranzel John Binggoy</span></div>
+              <div><span className="c-lbl">LinkedIn</span><span className="c-val">https://www.linkedin.com/in/ranzel-binggoy-360263323/</span></div>
             </a>
           </div>
         </div>
